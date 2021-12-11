@@ -14,11 +14,11 @@ music <- function(message, width = NULL, height = NULL, elementId = NULL) {
 
   # create widget
   htmlwidgets::createWidget(
-    name = "mywidget",
+    name = "mywidget2",
     x,
     width = width,
     height = height,
-    package = "mywidget",
+    package = "mywidget2",
     elementId = elementId
   )
 }
