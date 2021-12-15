@@ -5,7 +5,7 @@
 #' @import htmlwidgets
 #'
 #' @export
-music <- function(message, width = NULL, height = NULL, elementId = NULL) {
+now_playing_music <- function(message, width = NULL, height = NULL, elementId = NULL) {
 
   # forward options using x
   x <- list(
@@ -14,14 +14,42 @@ music <- function(message, width = NULL, height = NULL, elementId = NULL) {
 
   # create widget
   htmlwidgets::createWidget(
-    name = "mywidget2",
+    name = "mywidget",
     x,
     width = width,
     height = height,
-    package = "mywidget2",
+    package = "mywidget",
     elementId = elementId
   )
 }
+
+#' @export
+netease_music <- function(query = "代码", show_in_viewer = TRUE, select = 1) {
+  # do some thing
+  url <- URLencode(paste("http://smartdata.ruc.edu.cn/rmusicdown/search?query=", query, sep = ""), repeated = FALSE)
+  x <- httr::GET(url)
+  res <- httr::content(x, as = "parsed")
+  print("default select 1")
+  print("select No. | id | name | play count")
+  for (i in 1:length(res$result$playlists)) {
+    id <- res$result$playlists[[i]]$id
+    name <- res$result$playlists[[i]]$name
+    playcount <- res$result$playlists[[i]]$playCount
+    print(paste(i, id, name, playcount, sep = " | "))
+  }
+  if (select >= 1 && select <= length(res$result$playlists)) {
+    id <- res$result$playlists[[select]]$id
+  } else {
+    id <- "4886213342"
+  }
+  # some request
+  view_url <- paste("http://music.163.com/outchain/player?type=0&id=", id, "&auto=1&height=430", sep = "")
+  if (show_in_viewer) {
+    rstudioapi::viewer(view_url)
+  }
+  knitr::include_url(view_url)
+}
+
 
 #' Shiny bindings for mywidget
 #'
