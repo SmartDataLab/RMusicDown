@@ -1,6 +1,9 @@
 #%%
+from os import read
 import sqlite3
+from datetime import date, datetime
 from fastapi import FastAPI
+from requests import api
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from urllib.parse import quote, unquote
@@ -17,6 +20,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+db_path = "../data/recommend.db"
 #%%
 from browsermobproxy import Server
 from browsermobproxy import Client
@@ -108,29 +113,75 @@ def get_new_query_data(query):
     options.headless = True
     driver = webdriver.Firefox(service=service, options=options)
     proxy.new_har(options={"captureContent": True})
-    url = f"https://music.163.com/#/search/m/?s={query}&type=1000"
+    quoted_query = quote(query)
+    url = f"https://music.163.com/#/search/m/?s={quoted_query}&type=1000"
     print(url)
     driver.get(url)
-    # time.sleep(3)
+    time.sleep(2)
     res = proxy.har
-    json_d = json.loads(
-        [
-            one
-            for one in res["log"]["entries"]
-            if one["request"]["url"]
-            == "https://music.163.com/weapi/cloudsearch/get/web?csrf_token="
-        ][0]["response"]["content"]["text"]
-    )
+    api_request_info = [
+        one
+        for one in res["log"]["entries"]
+        if one["request"]["url"]
+        == "https://music.163.com/weapi/cloudsearch/get/web?csrf_token="
+    ][0]
+    # get the params and encSecKey
+    # Reverse Engineer with AI
+    post_data = {
+        one["name"]: one["value"]
+        for one in api_request_info["request"]["postData"]["params"]
+    }
     driver.quit()
+    # open connection
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+    json_path = f"../query_json/{query}.json"
+    c.execute(
+        "INSERT INTO QUERY (KEYWORD, PARAMS, ENCSECKEY, JSON_PATH) VALUES(?,?,?,?);",
+        (query, post_data["params"], post_data["encSecKey"], json_path),
+    )
+    conn.commit()
+    conn.close()
+    json_d = json.loads(api_request_info["response"]["content"]["text"])
+    json.dump(json_d, open(json_path, "w"), ensure_ascii=False)
+    # close connection
     return json_d
 
 
 # pprint.pprint(proxy.har)  # returns a HAR JSON blob
 #%%
+
+
 @app.get("/search")
-async def query(query: str = "姜云升"):
-    print(unquote(query))
-    return get_new_query_data(quote(query))
+async def query(query: str = "姜云升", mac_address: str = "", choice: int = 1):
+    readable_query = unquote(query)
+    print(readable_query)
+    # open connection
+    now = datetime.now()  # current date and time
+    date_time = now.strftime("%Y-%m-%d %H:%M:%S")
+    conn = sqlite3.connect(db_path)
+    # save the query record into database
+    c = conn.cursor()
+    c.execute(
+        "INSERT INTO REQUEST (KEYWORD, TIME, USER_MAC, CHOICE) VALUES(?,?,?,?);",
+        (readable_query, date_time, mac_address, choice),
+    )
+    # try to search from the database
+    c = conn.cursor()
+    cursor = c.execute(f"SELECT JSON_PATH FROM QUERY WHERE KEYWORD='{readable_query}';")
+    # if it exists load json and return restorn
+    # close connection
+    json_path = None
+    for row in cursor:
+        json_path = row[0]
+    conn.commit()
+    conn.close()
+    if json_path != None:
+        json_d = json.load(open(json_path))
+    # if not new query and return
+    else:
+        json_d = get_new_query_data(readable_query)
+    return json_d
 
 
 if __name__ == "__main__":

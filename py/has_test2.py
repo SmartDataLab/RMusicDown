@@ -3,6 +3,7 @@ from browsermobproxy import Server
 from browsermobproxy import Client
 import psutil
 import time
+from requests import api
 
 
 # for proc in psutil.process_iter():
@@ -17,11 +18,29 @@ import time
 # proxy = server.create_proxy()
 
 proxy = Client("localhost:8090")
+PROXY = proxy.proxy  # "<HOST:PORT>"
 #%%
 # time.sleep(1)
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.common.proxy import Proxy, ProxyType
+from selenium.webdriver.firefox.service import Service
 
+proxy_sele = Proxy(
+    {
+        "proxyType": ProxyType.MANUAL,
+        "httpProxy": PROXY,
+        "noProxy": "",  # set this value as desired
+    }
+)
+
+#          driver = webdriver.Firefox(executable_path=path,options=options,proxy=proxy )
+webdriver.DesiredCapabilities.FIREFOX["proxy"] = {
+    "httpProxy": PROXY,
+    "ftpProxy": PROXY,
+    "sslProxy": PROXY,
+    "proxyType": "MANUAL",
+}
 # options = webdriver.ChromeOptions()
 options = Options()
 # options = Options()
@@ -33,16 +52,25 @@ options = Options()
 # options.add_argument("--proxy-server={}".format(proxy.proxy))
 # print(options.proxy)
 # options.proxy = proxy.selenium_proxy()
-PROXY = proxy.proxy  # "<HOST:PORT>"
-webdriver.DesiredCapabilities.FIREFOX["proxy"] = {
-    "httpProxy": PROXY,
-    "ftpProxy": PROXY,
-    "sslProxy": PROXY,
-    "proxyType": "MANUAL",
-}
-# options.add_argument("--ignore-certificate-errors")
+service = Service(
+    executable_path="/home/su/.wdm/drivers/geckodriver/linux64/v0.30.0/geckodriver"
+    # executable_path="../geckodriver 2"
+)
+# chrome_options = Options()
+options = Options()
 options.headless = True
-driver = webdriver.Firefox(options=options)
+driver = webdriver.Firefox(service=service, options=options)
+
+# PROXY = proxy.proxy  # "<HOST:PORT>"
+# webdriver.DesiredCapabilities.FIREFOX["proxy"] = {
+# "httpProxy": PROXY,
+# "ftpProxy": PROXY,
+# "sslProxy": PROXY,
+# "proxyType": "MANUAL",
+# }
+## options.add_argument("--ignore-certificate-errors")
+# options.headless = True
+# driver = webdriver.Firefox(options=options)
 # chromePath = "/home/su/app/crawler/stock_post_crawler/chromedriver"
 # driver = webdriver.Chrome(executable_path=chromePath, chrome_options=options)
 # profile = webdriver.FirefoxProfile()
@@ -58,6 +86,24 @@ driver.get("https://music.163.com/#/search/m/?s=%E5%91%A8%E6%9D%B0%E4%BC%A6")
 res = proxy.har
 # print(proxy.har)  # returns a HAR JSON blob
 driver.close()
+#%%
+api_request_info = [
+    one
+    for one in res["log"]["entries"]
+    if one["request"]["url"]
+    == "https://music.163.com/weapi/cloudsearch/get/web?csrf_token="
+][0]
+api_request_info
+#%%
+post_data = {
+    one["name"]: one["value"]
+    for one in api_request_info["request"]["postData"]["params"]
+}
+post_data
+#%%
+post_data["params"]
+#%%
+post_data["encSecKey"]
 #%%
 # driver.get_screenshot_as_file("test3.png")
 # server.stop()

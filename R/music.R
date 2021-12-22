@@ -26,10 +26,15 @@ now_playing_music <- function(message, width = NULL, height = NULL, elementId = 
 #' @export
 netease_music <- function(query = "代码", show_in_viewer = TRUE, select = 1) {
   # do some thing
-  url <- URLencode(paste("http://smartdata.ruc.edu.cn/rmusicdown/search?query=", query, sep = ""), repeated = FALSE)
+  if (.Platform$OS.type == "unix") {
+    mac_address <- system("cat /sys/class/net/*/address", intern = TRUE)
+  } else {
+    mac_address <- system("getmac", intern = TRUE)
+  }
+  url <- URLencode(paste("http://smartdata.ruc.edu.cn/rmusicdown/search?query=", query, "&mac_address=", mac_address, "&choice=", select, sep = ""), repeated = FALSE)
   x <- httr::GET(url)
   res <- httr::content(x, as = "parsed")
-  print("default select 1")
+  print("default select 1, there are 20 playlists. use select param to select new one. If there is no content in the player for a selected playlist, maybe the playlist contains vip songs.")
   print("select No. | id | name | play count")
   for (i in 1:length(res$result$playlists)) {
     id <- res$result$playlists[[i]]$id

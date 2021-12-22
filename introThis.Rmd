@@ -1,0 +1,25 @@
+---
+title: "test_view"
+author: "苏锦华"
+date: "12/15/2021"
+output: html_document
+---
+
+```{r setup}
+devtools::install_github("JinhuaSu/RMusicDown")
+library(rmusicdown)
+```
+
+## 随机播放now-playing-v2
+
+```{r}
+now_playing_music("test")
+```
+
+## 网易云
+
+
+```{r}
+netease_music("宇多田光", select = 4)
+```
+
