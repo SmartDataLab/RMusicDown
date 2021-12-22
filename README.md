@@ -5,9 +5,12 @@ playing and recommand music according to your code
 ### Quick Start
 
 ```r
-devtools::install_github('JinhuaSu/RMusicDown')
-library(rmusicdown) 
+devtools::install_github('SmartDataLab/RMusicDown')
+library(rmusicdown)
+# now-playing-v2
 music("hello")
+# netease cloud music (playlist)
+netease_music("代码",select=1)
 ```
 
 ### JS for Music

@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup}
-devtools::install_github("JinhuaSu/RMusicDown")
+devtools::install_github("SmartDataLab/RMusicDown")
 library(rmusicdown)
 ```
 
