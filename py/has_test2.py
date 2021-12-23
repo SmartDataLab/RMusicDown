@@ -79,13 +79,37 @@ driver = webdriver.Firefox(service=service, options=options)
 # driver = webdriver.Firefox(firefox_profile=profile)
 #%%
 import pprint
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 
 proxy.new_har(options={"captureContent": True})
-driver.get("https://music.163.com/#/search/m/?s=%E5%91%A8%E6%9D%B0%E4%BC%A6")
+driver.get("https://music.163.com/#/search/m/?s=%E5%91%A8%E6%9D%B0%E4%BC%A6&type=1000")
+el_a = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located(
+        (
+            By.CSS_SELECTOR,
+            "div.ztag.j-flag div.n-srchrst.ztag table tbody tr.h-flag td div.f-cb div.tt div.ttc span.txt a",
+        )
+    )
+)
 # time.sleep(3)
 res = proxy.har
 # print(proxy.har)  # returns a HAR JSON blob
-driver.close()
+# driver.close()
+#%%
+driver.switch_to.default_content()
+#%%
+driver.switch_to.frame(0)
+el_a = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located(
+        (
+            By.CSS_SELECTOR,
+            "div.ztag.j-flag div.n-srchrst.ztag table tbody tr.h-flag td div.f-cb div.tt div.ttc span.txt a",
+        )
+    )
+)
+driver.switch_to.default_content()
 #%%
 api_request_info = [
     one

@@ -100,6 +100,9 @@ webdriver.DesiredCapabilities.FIREFOX["proxy"] = {
 #%%
 import pprint
 import json
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 
 
 def get_new_query_data(query):
@@ -117,7 +120,18 @@ def get_new_query_data(query):
     url = f"https://music.163.com/#/search/m/?s={quoted_query}&type=1000"
     print(url)
     driver.get(url)
-    time.sleep(2)
+    driver.switch_to.frame(0)
+    el_a = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located(
+            (
+                By.CSS_SELECTOR,
+                "div.ztag.j-flag div.n-srchrst.ztag table tbody tr.h-flag td div.f-cb div.tt div.ttc span.txt a",
+            )
+        )
+    )
+    driver.switch_to.default_content()
+    # auto monitor until data reveal
+    # time.sleep(2)
     res = proxy.har
     api_request_info = [
         one
@@ -133,18 +147,19 @@ def get_new_query_data(query):
     }
     driver.quit()
     # open connection
+    json_path = f"../query_json/{query}.json"
+    json_d = json.loads(api_request_info["response"]["content"]["text"])
+    json.dump(json_d, open(json_path, "w"), ensure_ascii=False)
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
-    json_path = f"../query_json/{query}.json"
     c.execute(
         "INSERT INTO QUERY (KEYWORD, PARAMS, ENCSECKEY, JSON_PATH) VALUES(?,?,?,?);",
         (query, post_data["params"], post_data["encSecKey"], json_path),
     )
     conn.commit()
     conn.close()
-    json_d = json.loads(api_request_info["response"]["content"]["text"])
-    json.dump(json_d, open(json_path, "w"), ensure_ascii=False)
     # close connection
+    # delete from query where keyword='姜云升';
     return json_d
 
 
