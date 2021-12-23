@@ -8,7 +8,7 @@ playing and recommand music according to your code
 devtools::install_github('SmartDataLab/RMusicDown')
 library(rmusicdown)
 # now-playing-v2
-now_playing_music("test")music("hello")
+now_playing_music("test")
 # netease cloud music (playlist)
 netease_music("代码",select=1)
 ```
