@@ -1,14 +1,14 @@
 #' JS Music Playing
 #'
 #' Music user interface using JS by 'https://spinitron.github.io/v2-web-integration/widget.html'.
-#' Support random music playing in both R-markdwon file and HTML file. 
-#' 
+#' Support random music playing in both R-markdwon file and HTML file.
+#'
 #' @param message A keyword representing your current mood
 #' @param width,height Must be a valid CSS unit (like \code{'100\%'},
 #'   \code{'400px'}, \code{'auto'}) or a number, which will be coerced to a
 #'   string and have \code{'px'} appended.
 #' @param elementId Required by htmlwidgets. Useless.
-#' 
+#'
 #'
 #' @import htmlwidgets
 #' @name now_playing_music
@@ -16,12 +16,12 @@
 #' @rdname JS-music
 
 now_playing_music <- function(message, width = NULL, height = NULL, elementId = NULL) {
-  
+
   # forward options using x
   x <- list(
     message = message
   )
-  
+
   # create widget
   htmlwidgets::createWidget(
     name = "mywidget",
@@ -36,14 +36,14 @@ now_playing_music <- function(message, width = NULL, height = NULL, elementId = 
 
 
 #' Netease Music
-#' 
+#'
 #' Netease interface in R-markdown file and HTML file. If run in R-markdown chunk, interface
 #' will be displayed in RStudio viewer. If compiled to HTML, interface will be embedded under chunk.
 #' Support key word searching.
-#' 
-#' @param query Key word that neads to be searched. 
+#'
+#' @param query Key word that neads to be searched. default "代码"
 #' @param show_in_viewer Binary variable with 1 representing the music interface need to be shown in RStudio Viewer.
-#' @param select Number of songs to be included. 
+#' @param select Number of songs to be included.
 #'
 #' @export
 #'

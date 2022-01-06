@@ -29,6 +29,8 @@ PPT可以嵌入音乐、vscode可以摸鱼听歌。Rmarkdown作为一种工作ID
 
 ## 随机播放now-playing-v2
 
+这个插件依赖于国外服务器，所以如果未显示可能是网速较慢，可以考虑科学上网。
+
 ```{r}
 now_playing_music("test")
 ```
@@ -37,5 +39,16 @@ now_playing_music("test")
 
 
 ```{r}
-netease_music("宇多田光", select = 4)
+# 默认播放 帮助写代码集中精神的歌单
+netease_music()
+```
+
+```{r}
+# 支持根据关键词搜索歌单并播放第一个
+netease_music("姜云升")
+```
+
+```{r}
+# 支持根据关键词搜索歌单并播放第select个
+netease_music("宇多田光", select = 3)
 ```
