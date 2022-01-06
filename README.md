@@ -12,6 +12,8 @@ library(rmusicdown)
 now_playing_music("test")
 # netease cloud music (playlist)
 netease_music("代码",select=1)
+# see more usage in our doc
+vignette(package="rmusicdown")
 ```
 
 ### JS for Music
