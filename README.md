@@ -1,7 +1,8 @@
 ## RMusicDown
 
-playing and recommand music according to your code 
+playing and recommand music according with R
 
+PPT可以嵌入音乐、vscode可以摸鱼听歌。Rmarkdown作为一种工作IDE和汇报展示的重要形式，不支持快捷的音乐查询、嵌入汇报文档以及敲代码跑实验的时候听歌。我们选择了两种路径实现了音乐的播放收听、同时后期支持推荐功能。
 ### Quick Start
 
 ```r

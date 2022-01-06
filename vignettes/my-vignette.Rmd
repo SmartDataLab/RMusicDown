@@ -1,0 +1,41 @@
+---
+title: "my-vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{my-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(rmusicdown)
+```
+
+## 出发点
+
+PPT可以嵌入音乐、vscode可以摸鱼听歌。Rmarkdown作为一种工作IDE和汇报展示的重要形式，不支持快捷的音乐查询、嵌入汇报文档以及敲代码跑实验的时候听歌。我们选择了两种路径实现了音乐的播放收听、同时后期支持推荐功能。
+
+## 分工
+
+马宇恒构思提出该需求痛点、明确相关功能点、课程汇报展示了我们实现的功能。
+苏锦华主要根据需求进行了技术调研，从JS Widget和外链播放的两种思路实现了功能，并封装了网易云搜索（hack）为后期推荐算法的上线提供数据支撑。
+
+## 随机播放now-playing-v2
+
+```{r}
+now_playing_music("test")
+```
+
+## 网易云
+
+
+```{r}
+netease_music("宇多田光", select = 4)
+```

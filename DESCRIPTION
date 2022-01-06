@@ -1,15 +1,22 @@
 Package: rmusicdown
-Title: What the Package Does (One Line, Title Case)
+Title: Integrate the music player into your rmarkdown or viewer, support the playlist searching and recommandation.
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "Jinhua",
+    c(person(given = "Jinhua",
            family = "Su",
            role = c("aut", "cre"),
            email = "944866518@qq.com",
-           comment = c(ORCID = "0000-0002-6344-0607"))
+           comment = c(ORCID = "0000-0002-6344-0607")),
+      person(given = "Yuheng",
+           family = "Ma",
+           role = "aut"))
 Description: What the package does (one paragraph).
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
